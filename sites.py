@@ -219,7 +219,7 @@ async def bewakoof():
         )
 
         for j in response.json()["products"]:
-            name = j["name"]
+            name = j["name"].replace(", ",";")
             price = int(j["price"])
             brand = j["manufacturer_brand"]
             link = f"{url}{j["url"]}"
@@ -310,4 +310,3 @@ async def mainfunc():
     await casekaro()
     await croma()
 
-asyncio.run(mainfunc())
