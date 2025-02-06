@@ -66,7 +66,7 @@ async def zapvi():
         soup_json = json.loads(soup_prod)['staticEvents']['ga']['woo_view_item_list'][0]['params']['items']
         for j in soup_json:
             link = soup.find("a", attrs={'aria-label':j['name']})['href']
-            await insert_in_db(j['name'],j['affiliation'],int(j['price']), link)
+            await insert_in_db(j['name'].replace(",",""),j['affiliation'],int(j['price']), link)
         time.sleep(1)
     
     print("Zapvi Data Added")
@@ -127,7 +127,7 @@ async def sirphire():
         
         for i in soup:
             a_tag = i.find("a", attrs={'target':'_blank'})
-            name = a_tag.text
+            name = a_tag.text.replace(",","")
             brand = "Sirphire"
             price = int(i.find("span", attrs={'class':'price'}).text[1:])
             link = a_tag["href"]
@@ -156,7 +156,7 @@ async def ringke():
         prod_url = f"{url}{str(i["href"])}"
         data_response = requests.get(f"{prod_url}.json",proxies=proxies, headers=headers)
         data_response = data_response.json()["product"]
-        name = data_response["title"]
+        name = data_response["title"].replace(",","")
         brand = data_response["vendor"]
         price = int(data_response["variants"][0]["price"][:-3])
         await insert_in_db(name,brand,price,prod_url)
@@ -218,15 +218,15 @@ async def bewakoof():
             proxies=proxies
         )
 
+        if len(response.json()["products"])<20:
+            break
         for j in response.json()["products"]:
-            name = j["name"].replace(", ",";")
+            name = j["name"].replace(",","")
             price = int(j["price"])
             brand = j["manufacturer_brand"]
             link = f"{url}{j["url"]}"
             await insert_in_db(name,brand,price,link)
 
-        if len(response.json()["products"])<20:
-            break
 
     print("Bewakoof Data Added")
 
@@ -260,7 +260,7 @@ async def casekaro():
             break
         
         for item in data["data"]:
-            name = item["product"]["title"]
+            name = item["product"]["title"].replace(",","")
             price = int(item["price"]["amount"])
             brand = item["product"]["vendor"]
             link = f"{url}{item["product"]["url"]}"
@@ -293,7 +293,7 @@ async def croma():
     count = 1
     for item in soup:
         print(count)
-        name = item.find("a").text
+        name = item.find("a").text.replace(",","")
         brand = "Croma"
         link = item.find("a")["href"]
         price = int(item.find("span",attrs={"data-testid":"new-price"}).text[2:])
